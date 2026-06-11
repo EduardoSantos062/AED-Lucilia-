@@ -61,11 +61,3 @@ Assim os dados **não se perdem** quando o programa fecha.
 - Manipulação de strings (`strcpy`, `strstr`, `tolower`)
 
 ---
-
-##  Fluxo do programa
-
-```
-               
-  Login (S/N)    -->   Boas-vindas      -->   Menu Principal 
-  ou Cadastro          personalizada          (opcoes 0 a 5) 
-```
