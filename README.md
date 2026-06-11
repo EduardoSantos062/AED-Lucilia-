@@ -47,7 +47,7 @@ Parque Vaca Brava|Lazer|Av. T-10, Setor Bueno
 Hospital Santa Helena|Saude|Rua 95, Setor Oeste
 ```
 
-Assim os dados **não se perdem** quando o programa fecha. 😎
+Assim os dados **não se perdem** quando o programa fecha. 
 
 ---
 
@@ -65,8 +65,7 @@ Assim os dados **não se perdem** quando o programa fecha. 😎
 ##  Fluxo do programa
 
 ```
-+----------------+     +------------------+     +-----------------+
-|  Login (S/N)   | --> |  Boas-vindas     | --> |  Menu Principal |
-|  ou Cadastro   |     |  personalizada   |     |  (opcoes 0 a 5) |
-+----------------+     +------------------+     +-----------------+
+               
+  Login (S/N)    -->   Boas-vindas      -->   Menu Principal 
+  ou Cadastro          personalizada          (opcoes 0 a 5) 
 ```
