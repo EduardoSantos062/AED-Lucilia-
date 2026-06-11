@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <locale.h>
-#include <ctype.h>
 
 void limparBuffer(){
     int c;
@@ -24,17 +23,15 @@ void voltarAoMenu(){
 }
 
 void paraMinusculas(char texto[]){
+    int tamanho = strlen(texto);
     int i;
-    for(i = 0; texto[i] != '\0'; i++){
-        texto[i] = tolower(texto[i]);
+
+    for(i = 0; i < tamanho; i++){
+        if(texto[i] >= 'A' && texto[i] <= 'Z'){
+            texto[i] = texto[i] + 32; // se somar 32 fica minusculo wtf
+        }
     }
 }
-
-typedef struct {
-    char nome[100];
-    char categoria[50];
-    char endereco[150];
-} Local;
 
 void cadastrarLocal() {
     FILE *arquivo = fopen("locais.txt", "a");
@@ -43,12 +40,14 @@ void cadastrarLocal() {
         return;
     }
 
-    Local l;
+    char nome[100];
+    char categoria[50];
+    char endereco[150];
     int catOpcao = 0;
 
     printf("\n--- Cadastrar Novo Local ---\n");
     printf("Nome do local (ex: Parque Vaca Brava, Hospital Santa Helena): ");
-    scanf(" %99[^\n]", l.nome);
+    scanf(" %99[^\n]", nome);
     limparBuffer();
 
     printf("Categoria:\n");
@@ -63,16 +62,16 @@ void cadastrarLocal() {
     limparBuffer();
 
     switch(catOpcao){
-        case 1: strcpy(l.categoria, "Lazer");   break;
-        case 2: strcpy(l.categoria, "Cuidado"); break;
-        case 3: strcpy(l.categoria, "Saude");   break;
+        case 1: strcpy(categoria, "Lazer");   break;
+        case 2: strcpy(categoria, "Cuidado"); break;
+        case 3: strcpy(categoria, "Saude");   break;
     }
 
     printf("Endereco: ");
-    scanf(" %149[^\n]", l.endereco);
+    scanf(" %149[^\n]", endereco);
     limparBuffer();
 
-    fprintf(arquivo, "%s|%s|%s\n", l.nome, l.categoria, l.endereco);
+    fprintf(arquivo, "%s,%s,%s\n", nome, categoria, endereco);
     fclose(arquivo);
     printf("\nLocal cadastrado com sucesso!\n");
 }
@@ -84,15 +83,17 @@ void listarLocais() {
         return;
     }
 
-    Local l;
+    char nome[100];
+    char categoria[50];
+    char endereco[150];
     int total = 0;
 
     printf("\n--- Lista de Locais Cadastrados ---\n");
-    while (fscanf(arquivo, " %99[^|]|%49[^|]|%149[^\n]", l.nome, l.categoria, l.endereco) == 3) {
+    while (fscanf(arquivo, " %99[^,],%49[^,],%149[^\n]", nome, categoria, endereco) == 3) {
         total++;
-        printf("\n%d. %s\n", total, l.nome);
-        printf("   Categoria: %s\n", l.categoria);
-        printf("   Endereco:  %s\n", l.endereco);
+        printf("\n%d. %s\n", total, nome);
+        printf("   Categoria: %s\n", categoria);
+        printf("   Endereco:  %s\n", endereco);
     }
     fclose(arquivo);
 
@@ -110,7 +111,9 @@ void buscarLocal() {
         return;
     }
 
-    Local l;
+    char nome[100];
+    char categoria[50];
+    char endereco[150];
     char termo[50];
     char nomeMin[100], categoriaMin[50];
     int encontrou = 0;
@@ -123,16 +126,16 @@ void buscarLocal() {
     paraMinusculas(termo);
 
     printf("\nResultados encontrados para '%s':\n", termo);
-    while (fscanf(arquivo, " %99[^|]|%49[^|]|%149[^\n]", l.nome, l.categoria, l.endereco) == 3) {
-        strcpy(nomeMin, l.nome);
-        strcpy(categoriaMin, l.categoria);
+    while (fscanf(arquivo, " %99[^,],%49[^,],%149[^\n]", nome, categoria, endereco) == 3) {
+        strcpy(nomeMin, nome);
+        strcpy(categoriaMin, categoria);
         paraMinusculas(nomeMin);
         paraMinusculas(categoriaMin);
 
         if (strstr(nomeMin, termo) != NULL || strstr(categoriaMin, termo) != NULL) {
-            printf("\n- %s\n", l.nome);
-            printf("  Categoria: %s\n", l.categoria);
-            printf("  Endereco:  %s\n", l.endereco);
+            printf("\n- %s\n", nome);
+            printf("  Categoria: %s\n", categoria);
+            printf("  Endereco:  %s\n", endereco);
             encontrou = 1;
         }
     }
@@ -143,39 +146,24 @@ void buscarLocal() {
     fclose(arquivo);
 }
 
-int carregarLocais(Local locais[], int max){
+void editarLocal() {
+    char nomes[100][100];
+    char categorias[100][50];
+    char enderecos[100][150];
+    int total = 0;
+
     FILE *arquivo = fopen("locais.txt", "r");
     if (arquivo == NULL) {
-        return 0;
-    }
-
-    int total = 0;
-    while (total < max &&
-           fscanf(arquivo, " %99[^|]|%49[^|]|%149[^\n]",
-                  locais[total].nome, locais[total].categoria, locais[total].endereco) == 3) {
-        total++;
-    }
-    fclose(arquivo);
-    return total;
-}
-
-void salvarLocais(Local locais[], int total){
-    FILE *arquivo = fopen("locais.txt", "w");
-    if (arquivo == NULL) {
-        printf("Erro ao abrir o arquivo de locais!\n");
+        printf("\nNenhum local cadastrado ainda.\n");
         return;
     }
 
-    int i;
-    for (i = 0; i < total; i++) {
-        fprintf(arquivo, "%s|%s|%s\n", locais[i].nome, locais[i].categoria, locais[i].endereco);
+    while (total < 100 &&
+           fscanf(arquivo, " %99[^,],%49[^,],%149[^\n]",
+                  nomes[total], categorias[total], enderecos[total]) == 3) {
+        total++;
     }
     fclose(arquivo);
-}
-
-void editarLocal() {
-    Local locais[100];
-    int total = carregarLocais(locais, 100);
 
     if (total == 0) {
         printf("\nNenhum local cadastrado ainda.\n");
@@ -198,11 +186,11 @@ void editarLocal() {
         return;
     }
 
-    Local *l = &locais[escolha - 1];
+    int pos = escolha - 1;
 
-    printf("\nEditando: %s\n", l->nome);
+    printf("\nEditando: %s\n", nomes[pos]);
     printf("Novo nome: ");
-    scanf(" %99[^\n]", l->nome);
+    scanf(" %99[^\n]", nomes[pos]);
     limparBuffer();
 
     int catOpcao;
@@ -218,22 +206,48 @@ void editarLocal() {
     limparBuffer();
 
     switch (catOpcao) {
-        case 1: strcpy(l->categoria, "Lazer");   break;
-        case 2: strcpy(l->categoria, "Cuidado"); break;
-        case 3: strcpy(l->categoria, "Saude");   break;
+        case 1: strcpy(categorias[pos], "Lazer");   break;
+        case 2: strcpy(categorias[pos], "Cuidado"); break;
+        case 3: strcpy(categorias[pos], "Saude");   break;
     }
 
     printf("Novo endereco: ");
-    scanf(" %149[^\n]", l->endereco);
+    scanf(" %149[^\n]", enderecos[pos]);
     limparBuffer();
 
-    salvarLocais(locais, total);
+    arquivo = fopen("locais.txt", "w");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo de locais!\n");
+        return;
+    }
+
+    int i;
+    for (i = 0; i < total; i++) {
+        fprintf(arquivo, "%s,%s,%s\n", nomes[i], categorias[i], enderecos[i]);
+    }
+    fclose(arquivo);
+
     printf("\nLocal editado com sucesso!\n");
 }
 
 void excluirLocal() {
-    Local locais[100];
-    int total = carregarLocais(locais, 100);
+    char nomes[100][100];
+    char categorias[100][50];
+    char enderecos[100][150];
+    int total = 0;
+
+    FILE *arquivo = fopen("locais.txt", "r");
+    if (arquivo == NULL) {
+        printf("\nNenhum local cadastrado ainda.\n");
+        return;
+    }
+
+    while (total < 100 &&
+           fscanf(arquivo, " %99[^,],%49[^,],%149[^\n]",
+                  nomes[total], categorias[total], enderecos[total]) == 3) {
+        total++;
+    }
+    fclose(arquivo);
 
     if (total == 0) {
         printf("\nNenhum local cadastrado ainda.\n");
@@ -257,7 +271,7 @@ void excluirLocal() {
     }
 
     char confirma;
-    printf("Tem certeza que deseja excluir '%s'? (S/N): ", locais[escolha - 1].nome);
+    printf("Tem certeza que deseja excluir '%s'? (S/N): ", nomes[escolha - 1]);
     scanf(" %c", &confirma);
     limparBuffer();
 
@@ -268,11 +282,23 @@ void excluirLocal() {
 
     int i;
     for (i = escolha - 1; i < total - 1; i++) {
-        locais[i] = locais[i + 1];
+        strcpy(nomes[i], nomes[i + 1]);
+        strcpy(categorias[i], categorias[i + 1]);
+        strcpy(enderecos[i], enderecos[i + 1]);
     }
     total--;
 
-    salvarLocais(locais, total);
+    arquivo = fopen("locais.txt", "w");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo de locais!\n");
+        return;
+    }
+
+    for (i = 0; i < total; i++) {
+        fprintf(arquivo, "%s,%s,%s\n", nomes[i], categorias[i], enderecos[i]);
+    }
+    fclose(arquivo);
+
     printf("\nLocal excluido com sucesso!\n");
 }
 
