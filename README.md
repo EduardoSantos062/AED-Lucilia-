@@ -1,6 +1,6 @@
-# 🏘️ MeuPedaço — Apoio 60+
+# Projeto - MeuPedaço 
 
-Um programa feito em **C** para cadastrar e encontrar locais úteis para o público 60+, como parques, hospitais e centros de cuidado. Simples, direto e feito para ser fácil de usar.
+Um programa feito em **C** para cadastrar e encontrar locais úteis para o público 60+, como parques, hospitais e centros de cuidado. Simples e direto.
 
 > Projeto desenvolvido para a disciplina de **Algoritmos**.
 
