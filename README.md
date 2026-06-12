@@ -27,7 +27,7 @@ Você só precisa do **GCC** instalado (no Windows, vem com o [MinGW](https://ww
 
 ```bash
 # Compilar
-gcc main.c -o main.exe -Wall
+gcc nomedoarquivo.c -o nomedoarquivo.exe 
 
 # Executar
 ./main.exe
@@ -47,17 +47,6 @@ Parque Vaca Brava|Lazer|Av. T-10, Setor Bueno
 Hospital Santa Helena|Saude|Rua 95, Setor Oeste
 ```
 
-Assim os dados **não se perdem** quando o programa fecha. 
-
----
-
-##  Conceitos de C usados
-
-- `struct` para organizar os dados de cada local
-- Vetores de structs para carregar os locais na memória
-- Arquivos (`fopen`, `fscanf`, `fprintf`, `fclose`) para persistência
-- Funções para modularizar o código (cada opção do menu é uma função)
-- Validação de entrada (`scanf` com limite de tamanho + limpeza de buffer)
-- Manipulação de strings (`strcpy`, `strstr`, `tolower`)
+Assim os dados **não se perdem**. 
 
 ---
